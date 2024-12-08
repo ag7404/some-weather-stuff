@@ -47,4 +47,7 @@ async function fetchWeatherData(lat, lon) {
         }
 
     };
+
+    console.log(weatherData); // this is a test change
+
 }
