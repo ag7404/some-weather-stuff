@@ -11,13 +11,23 @@
 
 		<title>hello</title>
 		
+                <link rel="stylesheet" href="style.css">
 
 	</head>
 
 
 	<body>
 
-        <h1>hello world!</h1>
+        <h1>title</h1>
+
+        <p><span class="l">temperature:</span> <span id="temperature">-</span>&deg;C (<span id="ftemp">-</span>&deg; F)</p>
+        <p><span class="l">precipitation:</span> <span id="precipitation">-</span>% chance</p>
+        <p><span class="l">wind speed:</span> <span id="windSpeed">-</span> kmph</p>
+        <p><span class="l">wind direction:</span> <span id="windDirection"></span>&deg;</p>
+        <img src="arrow.svg" width="75px" id="wind-arrow">
+        <p><span class="l">cloud cover:</span> <span id="cloudCover">-</span>%</p>
+
+        <p><span class="l">ai-generated summary:</span> <span id="summary"></span></p>
 
         <script src="script.js"></script>
 

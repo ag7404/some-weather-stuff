@@ -1,5 +1,9 @@
 const express = require('express');
 const om = require('openmeteo');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+const genAI = new GoogleGenerativeAI("AIzaSyC6xr5vT85QSMWNyqWyfP3A18nPnyh8ZmY");
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const app = express();
 
@@ -8,18 +12,25 @@ app.listen(3000, () => {
 });
 
 app.use(express.static("public"));
-app.use(express.json()); // parses body of requests as json [middleware: research]
+app.use(express.json());
 
-app.post("/coordinates", (req, res) => {
-    fetchWeatherData(req.body.latitude, req.body.longitude);
-    res.send("/coordinates: POST request receieved.");
+app.post("/data", async (req, res) => {
+    // req.body.latitude, req.body.longitude
+    const d = await getAllData(req.body.latitude, req.body.longitude);
+    res.send(d);
 });
 
-app.get("/weather-data", (req, res) => {
-    res.send("omg hi!!");
-});
+async function generateSummary(weatherData) {
 
-async function fetchWeatherData(lat, lon) {
+    const prompt = "Generate a two sentence summary of this weather data and _nothing_ else: temperature: " + weatherData.temperature + " C precipitation: " + weatherData.precipitation + "% wind speed: " + weatherData.windSpeed + "kmph cloud cover: " + weatherData.cloudCover + "%";
+
+    const result = await model.generateContent(prompt);
+    
+    return result;
+
+}
+// fetch weather data ==> generate summary ==> post response
+async function getAllData(lat, lon) {
     const params = {
         "latitude": [lat],
         "longitude": [lon],
@@ -36,7 +47,7 @@ async function fetchWeatherData(lat, lon) {
 
     const weatherData = {
 
-        current: {
+        
             time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
             temperature: current.variables(0).value(),
             precipitation: current.variables(1).value(),
@@ -44,10 +55,12 @@ async function fetchWeatherData(lat, lon) {
             windSpeed: current.variables(3).value(),
             windDirection: current.variables(4).value(),
             cloudCover: current.variables(5).value()
-        }
+        
 
     };
 
-    console.log(weatherData); // this is a test change
-
+    const summary = (await generateSummary(weatherData)).response.text();
+    console.log(summary);
+    
+    return { weatherData, summary };
 }
