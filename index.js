@@ -7,8 +7,8 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const app = express();
 
-app.listen(3000, () => {
-    console.log("listening on port 3000");
+app.listen(process.env.PORT, () => {
+    console.log("listening on port");
 });
 
 app.use(express.static("public"));
